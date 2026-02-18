@@ -1,0 +1,16 @@
+{% extends "core/base.html" %}
+
+{% block content %}
+<h2>Editar Categoría</h2>
+<form method="post">
+    {% csrf_token %}
+    Nombre: <input type="text" name="nombre" value="{{ categoria.nombre }}" required><br>
+    Tipo:
+    <select name="tipo">
+        <option value="Gasto" {% if categoria.tipo == "Gasto" %}selected{% endif %}>Gasto</option>
+        <option value="Ingreso" {% if categoria.tipo == "Ingreso" %}selected{% endif %}>Ingreso</option>
+    </select><br>
+    <button type="submit">Guardar</button>
+</form>
+<a href="{% url 'lista_categorias' %}">Volver</a>
+{% endblock %}

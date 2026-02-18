@@ -1,0 +1,70 @@
+{% extends "core/base.html" %}
+
+{% block content %}
+<h2>Crear Subcategoría</h2>
+<form method="post">
+    {% csrf_token %}
+    Nombre: <input type="text" name="nombre" required><br>
+
+    <!-- ===================== -->
+    <!-- Tipo de la subcategoría -->
+    <!-- ===================== -->
+    Tipo:
+    <select name="tipo" id="tipo">
+        <option value="Gasto">Gasto</option>
+        <option value="Ingreso">Ingreso</option>
+    </select><br>
+
+    <!-- ===================== -->
+    <!-- Categoría filtrada según el tipo -->
+    <!-- ===================== -->
+    Categoria:
+    <select name="categoria" id="categoria">
+        {% for cat in categorias %}
+            <!-- data-tipo sirve para filtrar con JS -->
+            <option value="{{ cat.pk }}" data-tipo="{{ cat.tipo }}">
+                {{ cat.nombre }} ({{ cat.tipo }})
+            </option>
+        {% endfor %}
+    </select><br>
+
+    <!-- ===================== -->
+    <!-- SCRIPT DE FILTRADO -->
+    <!-- ===================== -->
+    <script>
+      const tipoSelect = document.getElementById('tipo');
+      const categoriaSelect = document.getElementById('categoria');
+
+      function filtrarCategorias() {
+          const tipoSeleccionado = tipoSelect.value;
+          let primeraVisible = null;
+
+          // Ocultar opciones que no coinciden con el tipo
+          for (let i = 0; i < categoriaSelect.options.length; i++) {
+              const option = categoriaSelect.options[i];
+              if (option.dataset.tipo === tipoSeleccionado) {
+                  option.style.display = ''; // visible
+                  if (!primeraVisible) primeraVisible = option.value;
+              } else {
+                  option.style.display = 'none'; // ocultar
+              }
+          }
+
+          // Si la categoría seleccionada no es del tipo, selecciona la primera visible
+          const selectedOption = categoriaSelect.options[categoriaSelect.selectedIndex];
+          if (!selectedOption || selectedOption.style.display === 'none') {
+              categoriaSelect.value = primeraVisible;
+          }
+      }
+
+      // Llamar al cargar la página
+      filtrarCategorias();
+
+      // Llamar cada vez que cambie el tipo
+      tipoSelect.addEventListener('change', filtrarCategorias);
+    </script>
+
+    <button type="submit">Crear</button>
+</form>
+<a href="{% url 'lista_subcategorias' %}">Volver</a>
+{% endblock %}

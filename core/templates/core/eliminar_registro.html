@@ -1,0 +1,25 @@
+{% extends "core/base.html" %}
+
+{% block content %}
+<h2>Eliminar Registro</h2>
+<p>¿Seguro que quieres eliminar este registro?</p>
+
+<ul>
+    <li>Fecha: {{ registro.fecha }}</li>
+    <li>Importe: {{ registro.importe }}</li>
+    <li>Cuenta: {{ registro.cuenta.nombre }}</li>
+    <li>Tipo: {{ registro.tipo }}</li>
+    <li>Método: {{ registro.metodo }}</li>
+    <li>Categoría: {{ registro.categoria.nombre }}</li>
+    <li>Subcategoría: {{ registro.subcategoria.nombre }}</li>
+    <li>Concepto: {{ registro.concepto }}</li>
+    <li>Notas: {{ registro.notas }}</li>
+</ul>
+
+<form method="post">
+    {% csrf_token %}
+    <button type="submit">Sí, eliminar</button>
+</form>
+
+<a href="{% url 'lista_registros' %}">Cancelar</a>
+{% endblock %}

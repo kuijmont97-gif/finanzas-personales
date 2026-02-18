@@ -1,0 +1,14 @@
+{% extends "core/base.html" %}
+{% block content %}
+
+<h2>Importar Registros CSV</h2>
+
+<form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    <input type="file" name="archivo" required>
+    <button type="submit">Importar</button>
+</form>
+
+<a href="{% url 'lista_registros' %}">Volver</a>
+
+{% endblock %}

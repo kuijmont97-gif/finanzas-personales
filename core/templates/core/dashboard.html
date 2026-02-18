@@ -1,0 +1,87 @@
+{% extends "core/base.html" %}
+
+{% block content %}
+
+<h2 class="mb-4">Dashboard</h2>
+
+<!-- TARJETAS RESUMEN -->
+<div class="row mb-4">
+    <div class="col-md-6">
+        <div class="card shadow-sm border-0">
+            <div class="card-body">
+                <h5 class="card-title text-success">Total Ingresos</h5>
+                <h3 class="fw-bold">{{ total_ingresos }}</h3>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6">
+        <div class="card shadow-sm border-0">
+            <div class="card-body">
+                <h5 class="card-title text-danger">Total Gastos</h5>
+                <h3 class="fw-bold">{{ total_gastos }}</h3>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- GRÁFICO GASTOS POR CATEGORÍA -->
+<div class="card shadow-sm border-0 mb-4">
+    <div class="card-body">
+        <h5 class="mb-3">Gastos por Categoría</h5>
+        <canvas id="gastosCategoria"></canvas>
+    </div>
+</div>
+
+<!-- GRÁFICO EVOLUCIÓN MENSUAL -->
+<div class="card shadow-sm border-0">
+    <div class="card-body">
+        <h5 class="mb-3">Evolución Mensual</h5>
+        <canvas id="evolucionMensual"></canvas>
+    </div>
+</div>
+
+{% endblock %}
+
+
+{% block scripts %}
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+const categoriasLabels = JSON.parse('{{ categorias_labels|escapejs }}');
+const categoriasData = JSON.parse('{{ categorias_data|escapejs }}');
+
+new Chart(document.getElementById('gastosCategoria'), {
+    type: 'pie',
+    data: {
+        labels: categoriasLabels,
+        datasets: [{
+            data: categoriasData
+        }]
+    }
+});
+
+const meses = JSON.parse('{{ meses|escapejs }}');
+const ingresosMensuales = JSON.parse('{{ ingresos_mensuales|escapejs }}');
+const gastosMensuales = JSON.parse('{{ gastos_mensuales|escapejs }}');
+
+new Chart(document.getElementById('evolucionMensual'), {
+    type: 'bar',
+    data: {
+        labels: meses,
+        datasets: [
+            {
+                label: 'Ingresos',
+                data: ingresosMensuales
+            },
+            {
+                label: 'Gastos',
+                data: gastosMensuales
+            }
+        ]
+    }
+});
+</script>
+
+{% endblock %}

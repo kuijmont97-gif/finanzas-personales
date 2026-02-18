@@ -1,0 +1,12 @@
+{% extends "core/base.html" %}
+
+{% block content %}
+<h2>Editar Cuenta</h2>
+<form method="post">
+    {% csrf_token %}
+    Nombre: <input type="text" name="nombre" value="{{ cuenta.nombre }}" required><br>
+    Saldo inicial: <input type="number" name="saldo" value="{{ cuenta.saldo_inicial }}" step="0.01"><br>
+    <button type="submit">Guardar</button>
+</form>
+<a href="{% url 'lista_cuentas' %}">Volver</a>
+{% endblock %}

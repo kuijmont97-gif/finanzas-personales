@@ -1,0 +1,124 @@
+{% extends "core/base.html" %}
+
+{% block content %}
+<div class="container-fluid py-3">
+    <h2>Registros</h2>
+
+    <div class="mb-3">
+        <a href="{% url 'exportar_registros' %}" class="btn btn-success btn-sm">Exportar CSV</a>
+        <a href="{% url 'importar_registros' %}" class="btn btn-info btn-sm">Importar CSV</a>
+        <a href="{% url 'crear_registro' %}" class="btn btn-primary btn-sm">Crear nuevo registro</a>
+    </div>
+
+    <form method="get" class="row g-2 mb-3">
+        <div class="col-sm-2">
+            <label class="form-label">Fecha desde</label>
+            <input type="date" class="form-control form-control-sm" name="fecha_desde" value="{{ filtros.fecha_desde }}">
+        </div>
+        <div class="col-sm-2">
+            <label class="form-label">Fecha hasta</label>
+            <input type="date" class="form-control form-control-sm" name="fecha_hasta" value="{{ filtros.fecha_hasta }}">
+        </div>
+        <div class="col-sm-2">
+            <label class="form-label">Cuenta</label>
+            <select name="cuenta" class="form-select form-select-sm">
+                <option value="">Todos</option>
+                {% for c in cuentas %}
+                    <option value="{{ c.id }}" {% if filtros.cuenta == c.id|stringformat:"s" %}selected{% endif %}>{{ c.nombre }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="col-sm-2">
+            <label class="form-label">Tipo</label>
+            <select name="tipo" class="form-select form-select-sm">
+                <option value="">Todos</option>
+                <option value="Gasto" {% if filtros.tipo == "Gasto" %}selected{% endif %}>Gasto</option>
+                <option value="Ingreso" {% if filtros.tipo == "Ingreso" %}selected{% endif %}>Ingreso</option>
+            </select>
+        </div>
+        <div class="col-sm-2">
+            <label class="form-label">Categoría</label>
+            <select name="categoria" class="form-select form-select-sm">
+                <option value="">Todas</option>
+                {% for cat in categorias %}
+                    <option value="{{ cat.id }}" {% if filtros.categoria == cat.id|stringformat:"s" %}selected{% endif %}>{{ cat.nombre }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="col-sm-2">
+            <label class="form-label">Método Pago</label>
+            <input type="text" name="metodo_pago" class="form-control form-control-sm" value="{{ filtros.metodo_pago }}">
+        </div>
+
+        <div class="col-12 mt-2">
+            <button type="submit" class="btn btn-primary btn-sm">Filtrar</button>
+            <a href="{% url 'lista_registros' %}" class="btn btn-secondary btn-sm">Limpiar</a>
+        </div>
+    </form>
+
+    <div class="table-responsive">
+        <table class="table table-striped table-hover table-bordered">
+            <thead>
+                <tr>
+                    {% with current_order=request.GET.ordenar %}
+                        {% for label, field in columnas %}
+                            <th>
+                                <a href="?{% for key,value in request.GET.items %}{% if key != 'ordenar' %}{{ key }}={{ value }}&{% endif %}{% endfor %}ordenar={% if current_order == field %}-{{ field }}{% else %}{{ field }}{% endif %}">
+                                    {{ label }}
+                                    {% if current_order == field %} ▲{% endif %}
+                                    {% if current_order == "-"|add:field %} ▼{% endif %}
+                                </a>
+                            </th>
+                        {% endfor %}
+                        <th>Notas</th>
+                        <th>Acciones</th>
+                    {% endwith %}
+                </tr>
+            </thead>
+            <tbody>
+                {% for r in page_obj %}
+                    <tr>
+                        <td>{{ r.fecha }}</td>
+                        <td>{{ r.importe }}</td>
+                        <td>{{ r.cuenta.nombre }}</td>
+                        <td>{{ r.tipo }}</td>
+                        <td>{{ r.metodo_pago }}</td>
+                        <td>{{ r.categoria.nombre }}</td>
+                        <td>{{ r.subcategoria.nombre|default_if_none:"" }}</td>
+                        <td>{{ r.concepto }}</td>
+                        <td>{{ r.notas }}</td>
+                        <td>
+                            <a href="{% url 'editar_registro' r.pk %}" class="btn btn-sm btn-warning">Editar</a>
+                            <a href="{% url 'eliminar_registro' r.pk %}" class="btn btn-sm btn-danger">Eliminar</a>
+                        </td>
+                    </tr>
+                {% empty %}
+                    <tr>
+                        <td colspan="10">No hay registros todavía.</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    {% with request.GET.urlencode as filtros_url %}
+        <nav aria-label="Paginación">
+            <ul class="pagination justify-content-center">
+                {% if page_obj.has_previous %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% if filtros_url %}&{{ filtros_url }}{% endif %}">Anterior</a>
+                    </li>
+                {% endif %}
+                <li class="page-item disabled">
+                    <span class="page-link">Página {{ page_obj.number }} de {{ page_obj.paginator.num_pages }}</span>
+                </li>
+                {% if page_obj.has_next %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page_obj.next_page_number }}{% if filtros_url %}&{{ filtros_url }}{% endif %}">Siguiente</a>
+                    </li>
+                {% endif %}
+            </ul>
+        </nav>
+    {% endwith %}
+</div>
+{% endblock %}

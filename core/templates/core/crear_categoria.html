@@ -1,0 +1,16 @@
+{% extends "core/base.html" %}
+
+{% block content %}
+<h2>Crear Categoría</h2>
+<form method="post">
+    {% csrf_token %}
+    Nombre: <input type="text" name="nombre" required><br>
+    Tipo:
+    <select name="tipo">
+        <option value="Gasto">Gasto</option>
+        <option value="Ingreso">Ingreso</option>
+    </select><br>
+    <button type="submit">Crear</button>
+</form>
+<a href="{% url 'lista_categorias' %}">Volver</a>
+{% endblock %}

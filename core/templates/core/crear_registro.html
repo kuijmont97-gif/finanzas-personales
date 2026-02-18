@@ -1,0 +1,138 @@
+{% extends "core/base.html" %}
+
+{% block content %}
+<div class="container py-3">
+    <h2>Crear Registro</h2>
+
+    <form method="post" class="row g-3">
+        {% csrf_token %}
+
+        <div class="col-md-3 col-sm-6">
+            <label class="form-label">Fecha</label>
+            <input type="date" name="fecha" class="form-control" required>
+        </div>
+
+        <div class="col-md-3 col-sm-6">
+            <label class="form-label">Importe</label>
+            <input type="number" name="importe" step="0.01" class="form-control">
+        </div>
+
+        <div class="col-md-3 col-sm-6">
+            <label class="form-label">Cuenta</label>
+            <select name="cuenta" class="form-select">
+                {% for c in cuentas %}
+                    <option value="{{ c.pk }}">{{ c.nombre }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="col-md-3 col-sm-6">
+            <label class="form-label">Tipo</label>
+            <select name="tipo" id="tipo" class="form-select">
+                <option value="Gasto">Gasto</option>
+                <option value="Ingreso">Ingreso</option>
+            </select>
+        </div>
+
+        <div class="col-md-3 col-sm-6">
+            <label class="form-label">Método de Pago</label>
+            <select name="metodo_pago" class="form-select">
+                <option value="Bizum">Bizum</option>
+                <option value="Tarjeta">Tarjeta</option>
+                <option value="Transferencia">Transferencia</option>
+                <option value="Traspaso">Traspaso</option>
+                <option value="Efectivo">Efectivo</option>
+            </select>
+        </div>
+
+        <div class="col-md-3 col-sm-6">
+            <label class="form-label">Categoría</label>
+            <select name="categoria" id="categoria" class="form-select">
+                {% for cat in categorias %}
+                    <option value="{{ cat.pk }}" data-tipo="{{ cat.tipo }}">{{ cat.nombre }} ({{ cat.tipo }})</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="col-md-3 col-sm-6">
+            <label class="form-label">Subcategoría</label>
+            <select name="subcategoria" id="subcategoria" class="form-select">
+                {% for sub in subcategorias %}
+                    <option value="{{ sub.pk }}" data-tipo="{{ sub.tipo }}" data-categoria="{{ sub.categoria.pk }}">
+                        {{ sub.nombre }} ({{ sub.categoria.nombre }})
+                    </option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="col-md-6 col-sm-12">
+            <label class="form-label">Concepto</label>
+            <input type="text" name="concepto" class="form-control">
+        </div>
+
+        <div class="col-12">
+            <label class="form-label">Notas</label>
+            <input type="text" name="notas" class="form-control">
+        </div>
+
+        <div class="col-12">
+            <button type="submit" class="btn btn-primary">Crear</button>
+            <a href="{% url 'lista_registros' %}" class="btn btn-secondary">Volver</a>
+        </div>
+    </form>
+</div>
+
+<!-- ======================= -->
+<!-- Filtrado dinámico -->
+<!-- ======================= -->
+<script>
+const tipoSelect = document.getElementById('tipo');
+const categoriaSelect = document.getElementById('categoria');
+const subcategoriaSelect = document.getElementById('subcategoria');
+
+function filtrarCategorias() {
+    const tipoSeleccionado = tipoSelect.value;
+    let primeraCat = null;
+
+    for (let i = 0; i < categoriaSelect.options.length; i++) {
+        const option = categoriaSelect.options[i];
+        if (option.dataset.tipo === tipoSeleccionado) {
+            option.style.display = '';
+            if (!primeraCat) primeraCat = option.value;
+        } else {
+            option.style.display = 'none';
+        }
+    }
+    if (categoriaSelect.options[categoriaSelect.selectedIndex].style.display === 'none') {
+        categoriaSelect.value = primeraCat;
+    }
+    filtrarSubcategorias();
+}
+
+function filtrarSubcategorias() {
+    const tipoSeleccionado = tipoSelect.value;
+    const categoriaSeleccionada = categoriaSelect.value;
+    let primeraSub = null;
+
+    for (let i = 0; i < subcategoriaSelect.options.length; i++) {
+        const option = subcategoriaSelect.options[i];
+        if (option.dataset.tipo === tipoSeleccionado && option.dataset.categoria === categoriaSeleccionada) {
+            option.style.display = '';
+            if (!primeraSub) primeraSub = option.value;
+        } else {
+            option.style.display = 'none';
+        }
+    }
+    if (subcategoriaSelect.options[subcategoriaSelect.selectedIndex].style.display === 'none') {
+        subcategoriaSelect.value = primeraSub;
+    }
+}
+
+// Eventos
+tipoSelect.addEventListener('change', filtrarCategorias);
+categoriaSelect.addEventListener('change', filtrarSubcategorias);
+
+// Inicializar
+filtrarCategorias();
+</script>
+{% endblock %}

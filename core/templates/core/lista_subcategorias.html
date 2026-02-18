@@ -1,0 +1,18 @@
+{% extends "core/base.html" %}
+
+{% block content %}
+<h2>Subcategorías</h2>
+<a href="{% url 'crear_subcategoria' %}">Crear nueva subcategoría</a>
+
+<ul>
+    {% for sub in subcategorias %}
+        <li>
+            {{ sub.nombre }} - {{ sub.tipo }} ({{ sub.categoria.nombre }})
+            <a href="{% url 'editar_subcategoria' sub.pk %}">Editar</a>
+            <a href="{% url 'eliminar_subcategoria' sub.pk %}">Eliminar</a>
+        </li>
+    {% empty %}
+        <li>No hay subcategorías todavía.</li>
+    {% endfor %}
+</ul>
+{% endblock %}

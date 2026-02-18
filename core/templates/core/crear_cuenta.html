@@ -1,0 +1,12 @@
+{% extends "core/base.html" %}
+
+{% block content %}
+<h2>Crear Cuenta</h2>
+<form method="post">
+    {% csrf_token %}
+    Nombre: <input type="text" name="nombre" required><br>
+    Saldo inicial: <input type="number" name="saldo" step="0.01"><br>
+    <button type="submit">Crear</button>
+</form>
+<a href="{% url 'lista_cuentas' %}">Volver</a>
+{% endblock %}

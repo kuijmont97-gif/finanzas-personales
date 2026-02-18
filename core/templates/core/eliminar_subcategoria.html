@@ -1,0 +1,11 @@
+{% extends "core/base.html" %}
+
+{% block content %}
+<h2>Eliminar Subcategoría</h2>
+<p>¿Seguro que quieres eliminar la subcategoría "{{ subcategoria.nombre }}"?</p>
+<form method="post">
+    {% csrf_token %}
+    <button type="submit">Sí, eliminar</button>
+</form>
+<a href="{% url 'lista_subcategorias' %}">Cancelar</a>
+{% endblock %}
